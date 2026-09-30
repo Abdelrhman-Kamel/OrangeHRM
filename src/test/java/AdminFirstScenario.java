@@ -25,6 +25,7 @@ public class AdminFirstScenario {
     PIM pim;
     Admin admin;
     WebDriver driver;
+    WebDriverWait wait;
     ConfigLoader configLoader = new ConfigLoader("src/main/resources/DataDriving/Config.properties");
 
 
@@ -38,15 +39,15 @@ public class AdminFirstScenario {
         options.addArguments("--incognito");
         driver = new ChromeDriver(options);
         driver.manage().window().maximize();
+        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         driver.get(configLoader.getValue("URL"));
         loginPage = new LoginPage(driver);
         dashboard = new Dashboard(driver);
         pim = new PIM(driver);
         admin = new Admin(driver);
         loginPage.login(jsonFileManager.getValue("username"), jsonFileManager.getValue("password"));
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         WebElement dashboardText = wait.until(ExpectedConditions.visibilityOfElementLocated(loginPage.getDashboard()));
-        Assert.assertEquals(driver.findElement(loginPage.getDashboard()).getText(), "Dashboard");
+        Assert.assertEquals(dashboardText.getText(), "Dashboard");
     }
 
     @AfterTest
@@ -66,24 +67,26 @@ public class AdminFirstScenario {
         pim.enterEnployeeCredentials(uniqueUsername, "leomessi22", "leomessi22");
         pim.enableStatus();
         pim.pressSave();
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(pim.successToast));
-        Assert.assertTrue(driver.findElement(admin.successToast).isDisplayed());
+
+        WebElement addSuccessToast = wait.until(ExpectedConditions.visibilityOfElementLocated(pim.successToast));
+        Assert.assertTrue(addSuccessToast.isDisplayed());
+
         pim.clickAdminCategory();
         admin.clickUserManagement();
         admin.clickUsers();
         admin.searchByUsername(uniqueUsername);
         admin.clickEdit();
         admin.editUserRoleToAdmin();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(admin.successToast));
-        Assert.assertTrue(driver.findElement(admin.successToast).isDisplayed());
+
+        WebElement roleSuccessToast = wait.until(ExpectedConditions.visibilityOfElementLocated(admin.successToast));
+        Assert.assertTrue(roleSuccessToast.isDisplayed());
+
         dashboard.logout();
         WebElement loginBtn = wait.until(ExpectedConditions.visibilityOfElementLocated(loginPage.loginHeader));
-        Assert.assertEquals(driver.findElement(loginPage.loginHeader).getText(), "Login", "Logout failed: Login page not displayed");
+        Assert.assertEquals(loginBtn.getText(), "Login", "Logout failed: Login page not displayed");
+
         loginPage.login(uniqueUsername, "leomessi22");
         WebElement dashboardText = wait.until(ExpectedConditions.visibilityOfElementLocated(loginPage.getDashboard()));
-        Assert.assertEquals(driver.findElement(loginPage.getDashboard()).getText(), "Dashboard");
-
+        Assert.assertEquals(dashboardText.getText(), "Dashboard");
     }
-
 }
