@@ -21,21 +21,22 @@ public class LoginPage {
     private final By passwordRequired = By.xpath("(//span[contains(@class, 'oxd-input-field-error-message') and text()='Required'])[2]");
 
     private final WebDriver driver;
+    private final WebDriverWait wait;
 
     public LoginPage(WebDriver driver) {
         this.driver = driver;
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
 
     public void login(String user, String pass) {
-        new WebDriverWait(driver, Duration.ofSeconds(10)).until(ExpectedConditions.visibilityOfElementLocated(userNameField));
-        driver.findElement(userNameField).sendKeys(user);
+        WebElement username = wait.until(ExpectedConditions.visibilityOfElementLocated(userNameField));
+        username.sendKeys(user);
         driver.findElement(passwordField).sendKeys(pass, Keys.ENTER);
     }
 
     public void clickLoginButton() {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        WebElement loginButton = wait.until(ExpectedConditions.elementToBeClickable(this.loginButton));
-        loginButton.click();
+        WebElement loginBtn = wait.until(ExpectedConditions.elementToBeClickable(loginButton));
+        loginBtn.click();
     }
 
     public By getDashboard() {
