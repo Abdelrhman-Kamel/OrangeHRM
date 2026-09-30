@@ -21,27 +21,24 @@ public class Admin {
     private final By userRoleAdminOption = By.xpath("//div[@role='listbox']//span[text()='Admin']");
     private final By saveButton = By.xpath("//button[normalize-space()='Save']");
     private final WebDriver driver;
-
+    private final WebDriverWait wait;
 
     public Admin(WebDriver driver) {
         this.driver = driver;
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
 
     public void clickUserManagement() {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         WebElement pressUserManagement = wait.until(ExpectedConditions.elementToBeClickable(userManagement));
         pressUserManagement.click();
     }
 
     public void clickUsers() {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         WebElement pressUsers = wait.until(ExpectedConditions.elementToBeClickable(users));
         pressUsers.click();
     }
 
-
     public void searchByUsername(String username) {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         WebElement userField = wait.until(ExpectedConditions.visibilityOfElementLocated(usernameField));
         userField.clear();
         userField.sendKeys(username);
@@ -51,7 +48,6 @@ public class Admin {
     }
 
     public void searchByEmployeeName(String employeeName) {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         WebElement empField = wait.until(ExpectedConditions.visibilityOfElementLocated(employeeNameField));
         empField.clear();
         empField.sendKeys(employeeName);
@@ -61,14 +57,11 @@ public class Admin {
     }
 
     public void clickEdit() {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         WebElement editBtn = wait.until(ExpectedConditions.visibilityOfElementLocated(firstRowEditButton));
         editBtn.click();
     }
 
     public void editUserRoleToAdmin() {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-
         WebElement dropdown = wait.until(ExpectedConditions.elementToBeClickable(userRoleDropdown));
         dropdown.click();
 
@@ -78,8 +71,4 @@ public class Admin {
         WebElement saveBtn = wait.until(ExpectedConditions.elementToBeClickable(saveButton));
         saveBtn.click();
     }
-
-
 }
-
-
