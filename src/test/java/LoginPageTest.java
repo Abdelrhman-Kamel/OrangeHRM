@@ -18,6 +18,7 @@ public class LoginPageTest {
     ExcelFileManager excelFileManager = new ExcelFileManager("src/main/resources/DataDriving/Invalid_Credentials.xlsx");
     JsonFileManager jsonFileManager = new JsonFileManager("src/main/resources/DataDriving/Valid_Credentials.json");
     WebDriver driver;
+    WebDriverWait wait;
     LoginPage loginPage;
     ConfigLoader configLoader = new ConfigLoader("src/main/resources/DataDriving/Config.properties");
 
@@ -31,6 +32,7 @@ public class LoginPageTest {
         options.addArguments("--incognito");
         driver = new ChromeDriver(options);
         driver.manage().window().maximize();
+        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         driver.get(configLoader.getValue("URL"));
         loginPage = new LoginPage(driver);
     }
@@ -53,30 +55,23 @@ public class LoginPageTest {
     @Test(priority = 2)
     public void verifyLoginOperation() {
         loginPage.login(jsonFileManager.getValue("username"), jsonFileManager.getValue("password"));
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         WebElement dashboardText = wait.until(ExpectedConditions.visibilityOfElementLocated(loginPage.getDashboard()));
-        Assert.assertEquals(driver.findElement(loginPage.getDashboard()).getText(), "Dashboard");
-
+        Assert.assertEquals(dashboardText.getText(), "Dashboard");
     }
 
     @Test(priority = 1, dataProvider = "Invalid Credentials")
     public void loginWithWrongCredentials(String user, String pass) {
         loginPage.login(user, pass);
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         WebElement errorText = wait.until(ExpectedConditions.visibilityOfElementLocated(loginPage.getErrorMessage()));
-        Assert.assertTrue(driver.findElement(loginPage.getErrorMessage()).getText().contains("Invalid credentials"));
+        Assert.assertTrue(errorText.getText().contains("Invalid credentials"));
     }
 
     @Test(priority = 0)
     public void VerifyEmptyFieldsLogin() {
         loginPage.clickLoginButton();
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         WebElement userRequiredText = wait.until(ExpectedConditions.visibilityOfElementLocated(loginPage.getUsernameRequired()));
         WebElement passwordRequiredText = wait.until(ExpectedConditions.visibilityOfElementLocated(loginPage.getPasswordRequired()));
-        Assert.assertTrue(driver.findElement(loginPage.getUsernameRequired()).getText().contains("Required"));
-        Assert.assertTrue(driver.findElement(loginPage.getPasswordRequired()).getText().contains("Required"));
-
+        Assert.assertTrue(userRequiredText.getText().contains("Required"));
+        Assert.assertTrue(passwordRequiredText.getText().contains("Required"));
     }
-
-
 }
